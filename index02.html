@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>上传你喜欢的图片</title>
+    <link rel="stylesheet" href="bootstrap-3.3.7-dist/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <style>
+
+        body, html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /*设置导航宽度*/
+        #header {
+            position: relative;
+            width: 100%;
+            height: 30%;
+            text-align: center;
+            background: #1f5d7b;
+            color: white;
+        }
+
+            /*设置导航字体背景*/
+            #header > h3 {
+                background: url('img/title_background.png') repeat-x;
+                -webkit-background-clip: text;
+                font-size: 40px;
+                font-family: '华文琥珀', 'sans-serif';
+                color: transparent;
+            }
+
+        /*设置页脚*/
+        #footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 4%;
+            background: rgb(46, 61, 69);
+            text-align: right;
+            padding-right: 3px;
+            color: gainsboro;
+            font-family: 'chiller', '方正舒体', 'sans-serif';
+        }
+
+
+        /*包裹框*/
+        #outer {
+            height: 66%;
+            position: relative;
+        }
+
+        /*设置预览框*/
+        #wrap {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            margin: auto;
+            width: 400px;
+            height: 300px;
+            transform-style: preserve-3d;
+            background: #1b6d85;
+        }
+
+            #wrap > div {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                background: #1b6d85;
+            }
+
+            #wrap:hover {
+                transform: rotateY(-360deg);
+            }
+    </style>
+</head>
+
+<body>
+
+    <!--巨幕-->
+    <div class="container-fluid " id="header">
+        <h3>上传你喜欢的图片</h3>
+        <p>可以在下方预览</p>
+        <form method="post" action="FileUpload.ashx" enctype="multipart/form-data">
+            <input type="file" name="fileUp" id="file_input" accept=".jpeg,.jpg,.png" style="display: none" multiple />
+            <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="chooseImg">
+                选择图片
+            </button>
+            <button type="submit" class="btn btn-primary" id="uploadingBtn">上传图片</button>
+        </form>
+    </div>
+
+    <!--  图片预览-->
+    <div id="outer">
+        <div id="wrap"></div>
+    </div>
+
+
+    <!--页脚-->
+    <div id="footer">
+        <span>DesignedBy:侯博宇、吉柏言、黄晨旭、徐智鹏</span>
+    </div>
+    <script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="bootstrap-3.3.7-dist/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            // 触发上传事件
+            $('#uploading').click(function () {
+                $('#file_input').click()
+            })
+
+            $('#chooseImg').click(function () {
+                $('#file_input').click()
+            })
+
+            // 用户上传时触发事件
+            $('#file_input').change(function () {
+                $('#wrap>div').remove()
+                readImg(this)
+            })
+
+            // 异常检测
+            $('#uploadingBtn').click(function (event) {
+                if (!document.getElementById('file_input').files.length) {
+                    alert('请先选择图片')
+                    $('#file_input').click()
+                    event.preventDefault()
+                } else {
+                    send()
+                }
+            })
+            var wrap = document.getElementById('wrap')
+            function readImg(obj) {
+                var index = 0
+                // 获取input里面的文件组
+                var fileList = obj.files
+                //对文件组进行遍历
+                var num = fileList.length
+                for (var i = 0; i < num; i++) {
+                    var reader = new FileReader()
+                    reader.readAsDataURL(fileList[i])
+
+                    // 当文件读取成功时执行的函数
+                    reader.onload = function () {
+                        if (num !== 1) {
+                            wrap.style.transformOrigin = 'center center ' + (-wrap.offsetWidth / 2 * Math.tan((num - 2) * Math.PI / (2 * num))) + 'px'
+                        } else {
+                            wrap.style.transformOrigin = 'center center '
+                        }
+                        div = document.createElement('div')
+                        var img = new Image(wrap.offsetWidth, wrap.offsetHeight)
+                        img.src = this.result
+                        div.appendChild(img)
+                        wrap.appendChild(div)
+                        if (num !== 1) {
+                            div.style.transformOrigin = 'center center ' + (-wrap.offsetWidth / 2 * Math.tan((num - 2) * Math.PI / (2 * num))) + 'px'
+                            div.style.transform = ' rotateY( ' + (360 / num * index++) + 'deg)'
+                        }
+                        wrap.style.transition = num + 's' + ' linear'
+
+                    }
+                }
+            }
+
+
+
+
+        }  // window.onload
+    </script>
+</body>
+</html>
